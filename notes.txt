@@ -1,1 +1,18 @@
 parliaments 23 (1957) to 41
+
+Speaker tables it in the HoC to put it in the official record, "have the honour"
+usually ends with a sentence containing "providence"
+
+SQL query to run with LiPaD for a speech delivered on October 1, 1986:
+
+```
+SELECT * FROM dilipadsite_basehansard
+  WHERE
+    (speechdate = '1986-10-01') AND
+    (
+      (position('providence' in LOWER(speechtext)) > 0) OR
+      (position('have the honour' in LOWER(speechtext)) > 0)
+    )
+```
+
+Dates sometimes off by one or two, first go backward then forward to find it
