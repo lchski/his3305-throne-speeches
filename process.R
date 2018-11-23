@@ -1,23 +1,11 @@
 library(tidyverse)
 
 # Load base data
-index_budget <- read_csv("data/source/index-budget.csv")
 index_throne <- read_csv("data/source/index-throne-speech.csv")
 dates_parliaments <- read_csv("data/source/dates-parliaments.csv")
 dates_sessions <- read_csv("data/source/dates-parliaments-sessions.csv")
 
 # Remove unnecessary columns
-index_budget <- index_budget %>%
-  select(
-    parliament = `Parliament`,
-    type = `Type of Budget`,
-    date = `Date of Speech`,
-    minister = `Minister of Finance`
-  ) %>%
-  mutate(
-    parliament = as.numeric(str_extract(parliament, "(\\d+)"))
-  )
-
 index_throne <- index_throne %>%
   select(
     parliament = `Parliament`,
@@ -31,10 +19,6 @@ index_throne <- index_throne %>%
   )
 
 # Filter to relevant parliaments (23 to 41, 1957-2015)
-index_budget <- index_budget %>%
-  filter(parliament > 22) %>%
-  filter(parliament < 42)
-
 index_throne <- index_throne %>%
   filter(parliament > 22) %>%
   filter(parliament < 42)
