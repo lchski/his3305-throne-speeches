@@ -129,9 +129,10 @@ topic_probabilities_by_document %>%
   summarize(avg = mean(weight))
 
 topic_probabilities_by_document %>%
-  filter(topic_id == 17) %>%
-  group_by(governing_party) %>%
+  group_by(topic_label, governing_party) %>%
   summarize(avg_weight = mean(weight)) %>%
   ggplot(mapping = aes(x = governing_party, y = avg_weight)) +
   geom_col(mapping = aes(fill = governing_party)) +
-  scale_fill_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1"))
+  scale_fill_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1")) +
+  facet_wrap(~ topic_label) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "none")
