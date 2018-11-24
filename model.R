@@ -101,6 +101,18 @@ dd_cov <- dd %>%
   group_by(topic) %>%
   summarize(variance = sd(weight) / mean(weight))
 
+## Topic probabilities per document
+topic_probabilities_by_document <- doc_topics(m) %>%
+  gather_matrix() %>%
+  rename(doc_id = row_key, topic_id = col_key, weight = value) %>%
+  inner_join(metadata(m), by = c("doc_id" = "num_id")) %>%
+  inner_join(topic_labels, by = c("topic_id" = "id")) %>%
+  select(topic_id, topic_label = label, weight, parliament, session, date, governing_party)
+
+topic_probabilities_by_document_cov <- topic_probabilities_by_document %>%
+  group_by(topic_id) %>%
+  summarize(cov = sd(weight) / mean(weight))
+
 ## Plot the topics over time
 topic_series(m) %>%
   plot_series(labels=topic_labels(m, 2))
