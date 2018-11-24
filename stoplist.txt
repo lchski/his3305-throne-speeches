@@ -488,11 +488,12 @@ members
 ministers
 parliament
 parliamentary
-canada
-canadian
+parliamentarians
 senate
 house
 commons
 speech
 throne
 th
+session
+asked

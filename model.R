@@ -5,6 +5,7 @@ library(mallet)
 # Load base index data
 
 index_throne <- read_csv("data/source/index-throne-speech.csv")
+parliaments_by_governing_party <- read_csv("data/generated/parliaments-governing-parties.csv")
 
 ## Remove unnecessary columns
 index_throne <- index_throne %>%
@@ -16,13 +17,18 @@ index_throne <- index_throne %>%
   mutate(
     parliament = as.numeric(str_extract(parliament, "(\\d+)")),
     session = as.numeric(str_extract(session, "(\\d+)")),
-    date = as.Date(substr(date, 1, 10))
-  )
+    date = as.Date(substr(date, 1, 10)),
+    pubdate = date
+  ) %>%
+  inner_join(parliaments_by_governing_party)
 
 ## Filter to relevant parliaments (23 to 42, 1957-current) and sort
 index_throne <- index_throne %>%
   filter(parliament > 22) %>%
-  arrange(date)
+  arrange(date) %>%
+  mutate(
+    num_id = row_number()
+  )
 
 ## Metadata setup
 speech_meta <- index_throne %>%
@@ -42,7 +48,7 @@ speeches <- tibble(id = speeches$id, text = speeches$text)
 mallet.instances <- mallet.import(speeches$id, speeches$text, stoplist = "stoplist.txt")
 
 ## Set the number of topics
-topic.model <- MalletLDA(num.topics = 10)
+topic.model <- MalletLDA(num.topics = 30)
 
 ## Load the speeches into the model
 topic.model$loadDocuments(mallet.instances)
@@ -79,6 +85,15 @@ metadata(m) <- speech_meta
 # Analysis
 
 ## Print out the topics
-topic_labels(m)
+topic_labels <- tibble(label = topic_labels(m)) %>% mutate(id = row_number())
+topic_labels
 
-dd <- top_docs(m, n=3)
+## Get the top 3 speeches corresponding to each topic
+dd <- top_docs(m, n=3) %>%
+  inner_join(metadata(m), by = c("doc" = "num_id")) %>%
+  select(topic, weight, parliament, session, date, governing_party) %>%
+  inner_join(topic_labels, by = c("topic" = "id"))
+
+## Plot the topics over time
+topic_series(m) %>%
+  plot_series(labels=topic_labels(m, 2))
