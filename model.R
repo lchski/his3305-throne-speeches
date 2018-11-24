@@ -116,3 +116,22 @@ topic_probabilities_by_document_cov <- topic_probabilities_by_document %>%
 ## Plot the topics over time
 topic_series(m) %>%
   plot_series(labels=topic_labels(m, 2))
+
+topic_probabilities_by_document %>%
+  filter(topic_id == 17) %>%
+  ggplot(mapping = aes(x = date, y = weight)) +
+  geom_point(mapping = aes(colour = governing_party), size = 3) +
+  scale_color_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1")) +
+  labs(title = topic_probabilities_by_document %>% filter(topic_id == 17) %>% select(topic_label) %>% unique() %>% pull())
+
+topic_probabilities_by_document %>%
+  group_by(topic_label, governing_party) %>%
+  summarize(avg = mean(weight))
+
+topic_probabilities_by_document %>%
+  filter(topic_id == 17) %>%
+  group_by(governing_party) %>%
+  summarize(avg_weight = mean(weight)) %>%
+  ggplot(mapping = aes(x = governing_party, y = avg_weight)) +
+  geom_col(mapping = aes(fill = governing_party)) +
+  scale_fill_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1"))
