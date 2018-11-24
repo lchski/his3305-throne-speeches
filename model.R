@@ -146,3 +146,18 @@ topic_probabilities_by_document %>%
   geom_col() +
   facet_wrap(~ topic_label) +
   theme(strip.text.x = element_text(hjust = 0), axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "none")
+
+## Topic average weights by decade by party
+topic_probabilities_by_document %>%
+  group_by(topic_label, decade = as.Date(paste(substr(date, 1, 3), "0-01-01", sep="")), governing_party) %>%
+  summarize(avg_weight = mean(weight)) %>%
+  ungroup() %>%
+  ggplot(mapping = aes(x = decade, y = avg_weight)) +
+  geom_line() +
+  geom_col(mapping = aes(fill = governing_party), position = "dodge") +
+  scale_fill_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1")) +
+  facet_wrap(~ topic_label) +
+  theme(
+    strip.text.x = element_text(hjust = 0),
+    axis.text.x = element_text(angle = 90, hjust = 1)
+  )
