@@ -18,8 +18,7 @@ index_throne <- index_throne %>%
     date = as.Date(substr(date, 1, 10))
   )
 
-# Filter to relevant parliaments (23 to 41, 1957-2015) and sort
+# Filter to relevant parliaments (23 to 42, 1957-current) and sort
 index_throne <- index_throne %>%
   filter(parliament > 22) %>%
-  filter(parliament < 42) %>%
   arrange(date)

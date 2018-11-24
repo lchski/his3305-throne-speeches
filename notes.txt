@@ -1,4 +1,4 @@
-parliaments 23 (1957) to 41
+parliaments 23 (1957) to 42
 
 Speaker tables it in the HoC to put it in the official record, "have the honour"
 usually ends with a sentence containing "providence"
@@ -16,3 +16,30 @@ SELECT * FROM dilipadsite_basehansard
 ```
 
 Dates sometimes off by one or two, first go backward then forward to find it
+
+Stopwords:
+
+```
+government
+speech
+members
+ministers
+```
+
+Ideas:
+
+* Compare "security" topics across time/governments/parties
+* Investigate federal involvement in provincial issues (e.g. healthcare)
+
+Potential topics:
+
+* Parliamentary routine
+* Natural resources
+* Security
+* International alliances
+* Social security
+* [health/medicare?]
+
+Phrase frequency:
+
+* "national ..." "security" vs "development" vs "unity"
