@@ -88,11 +88,18 @@ metadata(m) <- speech_meta
 topic_labels <- tibble(label = topic_labels(m)) %>% mutate(id = row_number())
 topic_labels
 
-## Get the top 3 speeches corresponding to each topic
-dd <- top_docs(m, n=3) %>%
+## Get the top 10 speeches corresponding to each topic
+dd <- top_docs(m, n=10) %>%
   inner_join(metadata(m), by = c("doc" = "num_id")) %>%
   select(topic, weight, parliament, session, date, governing_party) %>%
   inner_join(topic_labels, by = c("topic" = "id"))
+
+### Coefficients of variance for the topics across the ten speeches
+### (higher values will be flatter lines when plotted)
+dd_cov <- dd %>%
+  select(topic, weight) %>%
+  group_by(topic) %>%
+  summarize(variance = sd(weight) / mean(weight))
 
 ## Plot the topics over time
 topic_series(m) %>%
