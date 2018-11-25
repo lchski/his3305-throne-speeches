@@ -92,7 +92,9 @@ metadata(m) <- speech_meta
 # Create analysis variables
 
 ## Print out the topics
-topic_labels <- tibble(label = topic_labels(m)) %>% mutate(id = row_number())
+topic_labels <- tibble(label = topic_labels(m)) %>%
+  mutate(id = row_number()) %>%
+  select(id, label)
 
 ## Get the top 10 speeches corresponding to each topic
 dd <- top_docs(m, n=10) %>%

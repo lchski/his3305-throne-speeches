@@ -30,7 +30,7 @@ topic_probabilities_by_document %>%
   theme(strip.text.x = element_text(hjust = 0), axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "none")
 
 ## Topic average weights by decade by party
-topic_probabilities_by_document %>%
+plot_avg_weights_by_decade_by_party <- topic_probabilities_by_document %>%
   group_by(topic_label, decade = as.Date(paste(substr(date, 1, 3), "0-01-01", sep="")), governing_party) %>%
   summarize(avg_weight = mean(weight)) %>%
   ungroup() %>%
@@ -43,10 +43,19 @@ topic_probabilities_by_document %>%
   theme(
     strip.text.x = element_text(hjust = 0),
     axis.text.x = element_text(angle = 90, hjust = 1)
-  ) +
+  )
+
+
+
+# Save summaries
+
+plot_avg_weights_by_decade_by_party +
   ggsave(
-    paste("data/models/summaries/", conf_num_topics, "-", conf_num_runs, "-1.pdf", sep=""),
+    paste("data/models/summaries/", conf_num_topics, "-", conf_num_runs, "-1-avg-weights-decade-party.pdf", sep=""),
     width = 11,
     height = 8.5,
     units = "in"
   )
+
+topic_labels %>% write_csv(paste("data/models/summaries/", conf_num_topics, "-", conf_num_runs, "-1-topic-labels.csv", sep=""))
+
