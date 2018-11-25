@@ -2,6 +2,13 @@ library(tidyverse)
 library(dfrtopics)
 library(mallet)
 
+# Clear out
+rm(list = ls())
+
+# LOCAL CONFIG
+conf_num_topics <- 40
+conf_num_runs <- 10000
+
 # Load base index data
 
 index_throne <- read_csv("data/source/index-throne-speech.csv")
@@ -48,7 +55,7 @@ speeches <- tibble(id = speeches$id, text = speeches$text)
 mallet.instances <- mallet.import(speeches$id, speeches$text, stoplist = "stoplist.txt")
 
 ## Set the number of topics
-topic.model <- MalletLDA(num.topics = 30)
+topic.model <- MalletLDA(num.topics = conf_num_topics)
 
 ## Load the speeches into the model
 topic.model$loadDocuments(mallet.instances)
@@ -63,7 +70,7 @@ word.freqs <- mallet.word.freqs(topic.model)
 topic.model$setAlphaOptimization(20, 50)
 
 ## Train the model
-topic.model$train(1000)
+topic.model$train(conf_num_runs)
 
 ## NEW: run through a few iterations where we pick the best topic for each token,
 ##  rather than sampling from the posterior distribution.
@@ -82,13 +89,10 @@ m <- mallet_model(doc_topics = doc.topics, doc_ids = speeches$id, vocab = vocabu
 metadata(m) <- speech_meta
 
 
-
-
-# Analysis
+# Create analysis variables
 
 ## Print out the topics
 topic_labels <- tibble(label = topic_labels(m)) %>% mutate(id = row_number())
-topic_labels
 
 ## Get the top 10 speeches corresponding to each topic
 dd <- top_docs(m, n=10) %>%
@@ -111,50 +115,10 @@ topic_probabilities_by_document <- doc_topics(m) %>%
   inner_join(topic_labels, by = c("topic_id" = "id")) %>%
   select(topic_id, topic_label = label, weight, parliament, session, date, governing_party)
 
+### Coefficients of variance again
 topic_probabilities_by_document_cov <- topic_probabilities_by_document %>%
   group_by(topic_id) %>%
   summarize(cov = sd(weight) / mean(weight))
 
-
-
-
-# Visualize
-
-## Plot the topics over time
-topic_series(m) %>%
-  plot_series(labels=topic_labels(m, 2))
-
-## Topic average weights by party
-topic_probabilities_by_document %>%
-  group_by(topic_label, governing_party) %>%
-  summarize(avg_weight = mean(weight)) %>%
-  ggplot(mapping = aes(x = governing_party, y = avg_weight)) +
-  geom_col(mapping = aes(fill = governing_party)) +
-  scale_fill_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1")) +
-  facet_wrap(~ topic_label) +
-  theme(strip.text.x = element_text(hjust = 0), axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "none")
-
-## Topic average weights by decade
-topic_probabilities_by_document %>%
-  group_by(topic_label, decade = substr(date, 1, 3)) %>%
-  summarize(avg_weight = mean(weight)) %>%
-  ggplot(mapping = aes(x = decade, y = avg_weight)) +
-  geom_col() +
-  facet_wrap(~ topic_label) +
-  theme(strip.text.x = element_text(hjust = 0), axis.text.x = element_text(angle = 90, hjust = 1), legend.position = "none")
-
-## Topic average weights by decade by party
-topic_probabilities_by_document %>%
-  group_by(topic_label, decade = as.Date(paste(substr(date, 1, 3), "0-01-01", sep="")), governing_party) %>%
-  summarize(avg_weight = mean(weight)) %>%
-  ungroup() %>%
-  ggplot(mapping = aes(x = decade, y = avg_weight)) +
-  geom_col(mapping = aes(fill = governing_party), position = "dodge") +
-  geom_smooth(method = "lm", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
-  scale_fill_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1")) +
-  facet_wrap(~ topic_label) +
-  theme(
-    strip.text.x = element_text(hjust = 0),
-    axis.text.x = element_text(angle = 90, hjust = 1)
-  )
+## Optional: save model; rename with num topics, num iterations, index once saved
+save.image(paste("data/models/", conf_num_topics, "-", conf_num_runs, "-1.RData", sep=""))
