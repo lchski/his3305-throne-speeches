@@ -115,20 +115,14 @@ topic_probabilities_by_document_cov <- topic_probabilities_by_document %>%
   group_by(topic_id) %>%
   summarize(cov = sd(weight) / mean(weight))
 
+
+
+
+# Visualize
+
 ## Plot the topics over time
 topic_series(m) %>%
   plot_series(labels=topic_labels(m, 2))
-
-topic_probabilities_by_document %>%
-  filter(topic_id == 17) %>%
-  ggplot(mapping = aes(x = date, y = weight)) +
-  geom_point(mapping = aes(colour = governing_party), size = 3) +
-  scale_color_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1")) +
-  labs(title = topic_probabilities_by_document %>% filter(topic_id == 17) %>% select(topic_label) %>% unique() %>% pull())
-
-topic_probabilities_by_document %>%
-  group_by(topic_label, governing_party) %>%
-  summarize(avg = mean(weight))
 
 ## Topic average weights by party
 topic_probabilities_by_document %>%
@@ -155,8 +149,9 @@ topic_probabilities_by_document %>%
   summarize(avg_weight = mean(weight)) %>%
   ungroup() %>%
   ggplot(mapping = aes(x = decade, y = avg_weight)) +
-  geom_line() +
   geom_col(mapping = aes(fill = governing_party), position = "dodge") +
+  geom_smooth(method = "lm", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
   scale_fill_manual(values = c("conservative" = "royalblue1", "liberal" = "tomato1")) +
   facet_wrap(~ topic_label) +
   theme(
