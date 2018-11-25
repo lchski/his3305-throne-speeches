@@ -31,9 +31,10 @@ topic_probabilities_by_document %>%
 
 ## Topic average weights by decade by party
 plot_avg_weights_by_decade_by_party <- topic_probabilities_by_document %>%
-  group_by(topic_label, decade = as.Date(paste(substr(date, 1, 3), "0-01-01", sep="")), governing_party) %>%
+  group_by(topic_id, decade = as.Date(paste(substr(date, 1, 3), "0-01-01", sep="")), governing_party, topic_label) %>%
   summarize(avg_weight = mean(weight)) %>%
   ungroup() %>%
+  mutate(topic_label = fct_reorder(topic_label, topic_id)) %>%
   ggplot(mapping = aes(x = decade, y = avg_weight)) +
   geom_col(mapping = aes(fill = governing_party), position = "dodge") +
   geom_smooth(method = "lm", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
@@ -88,13 +89,6 @@ topic_probabilities_by_document %>%
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
   )
 
-
-
-topic_probabilities_by_document %>%
-  group_by(topic_id, decade = as.Date(paste(substr(date, 1, 3), "0-01-01", sep="")), governing_party, topic_label) %>%
-  summarize(avg_weight = mean(weight)) %>%
-  ungroup() %>%
-  mutate(topic_label = fct_reorder(topic_label, topic_id))
 
 # Save summaries
 
