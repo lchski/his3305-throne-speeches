@@ -22,9 +22,9 @@ index_throne <- index_throne %>%
   ) %>%
   inner_join(parliaments_by_governing_party)
 
-## Filter to relevant parliaments (23 to 42, 1957-current) and sort
+## Filter to relevant parliaments (22 to 42, 1953-current) and sort
 index_throne <- index_throne %>%
-  filter(parliament > 22) %>%
+  filter(parliament > 21) %>%
   arrange(date) %>%
   mutate(
     num_id = row_number()
@@ -80,6 +80,8 @@ m <- mallet_model(doc_topics = doc.topics, doc_ids = speeches$id, vocab = vocabu
 
 ## Load metadata into model
 metadata(m) <- speech_meta
+
+
 
 
 # Analysis
