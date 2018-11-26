@@ -62,7 +62,7 @@ Phrase frequency:
 * "national ..." "security" vs "development" vs "unity"
 * "united states" vs "united nations"
 
-Interesting words:
+Interesting words (use "Document terms" to get relative frequency of a term by document):
 
 * aboriginal
 * environment*
@@ -73,4 +73,12 @@ Interesting words:
 
 Nice models:
 
-* 30-1000-9340320
+* 30-1000-9067942 (mixed health/aboriginal; transparent/middle; hard/sovereignty; inflation/oil)
+* 30-1000-18623713 (slightly mixed health/aboriginal, also with a "care" elsewhere; trust/middle; new canadians; hard/north)
+
+* 30-1000-9340320* (slightly mixed health/aboriginal; trust/middle; new canadians; act/asked; arctic/afghanistan; oil/inflation)
+* 30-1000-8163086* (mixed health; trust/middle; new canadians; hard/free/arctic; oil/inflation; act/asked)
+
+* 30-1000-3884821** (not mixed; trust/middle/diversity; olympics; oil/inflation; act/asked; new canadians; hard/sovereignty; crisis/stimulus in 1970s and 2000s)
+
+* 30-1000-18480634*** (mixed health/aboriginal; trust/middle; hard/north; new canadians; act/asked; olympic; oil/inflation)
