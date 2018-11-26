@@ -496,4 +496,3 @@ speech
 throne
 th
 session
-asked

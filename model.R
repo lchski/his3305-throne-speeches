@@ -5,10 +5,12 @@ library(mallet)
 # Clear out
 rm(list = ls())
 
+source("visualize.R")
+
 # LOCAL CONFIG
-conf_index <- 2 # also the seed
+conf_index <- floor(runif(1, min=0, max=32000000)) # also the seed
 conf_num_topics <- 30
-conf_num_runs <- 10000
+conf_num_runs <- 1000
 
 # Load base index data
 
@@ -108,7 +110,33 @@ topic_probabilities_by_document_cov <- topic_probabilities_by_document %>%
   group_by(topic_id) %>%
   summarize(cov = sd(weight) / mean(weight))
 
-## Optional: save model; rename with num topics, num iterations, index once saved
+
+# SAVE ALL THE THINGS
+
+## Save model
 model_filename <- paste0("data/models/", conf_num_topics, "-", conf_num_runs, "-", conf_index)
 save.image(paste0(model_filename, ".RData"))
 write_mallet_model(m, model_filename)
+
+# Create a base filename for each summary file
+base_filename <- paste0("data/models/summaries/", conf_num_topics, "-", conf_num_runs, "-", conf_index, "-")
+
+# Save the topic labels
+topic_labels %>% write_csv(paste0(base_filename, "topic-labels-8.csv"))
+
+topic_labels_short %>% write_csv(paste0(base_filename, "topic-labels-16.csv"))
+
+# Save the medium topic labels
+topic_labels_medium %>% write_csv(paste0(base_filename, "topic-labels-20.csv"))
+
+# Save the long topic labels
+topic_labels_long %>% write_csv(paste0(base_filename, "topic-labels-100.csv"))
+
+# Save the plot of average weights by decade by party
+plot_avg_weights_by_decade_by_party(topic_probabilities_by_document) +
+  ggsave(
+    paste0(base_filename, "avg-weights-decade-party.pdf", sep=""),
+    width = 17,
+    height = 11,
+    units = "in"
+  )
