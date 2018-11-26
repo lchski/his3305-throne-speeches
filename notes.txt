@@ -82,3 +82,19 @@ Nice models:
 * 30-1000-3884821** (not mixed; trust/middle/diversity; olympics; oil/inflation; act/asked; new canadians; hard/sovereignty; crisis/stimulus in 1970s and 2000s)
 
 * 30-1000-18480634*** (mixed health/aboriginal; trust/middle; hard/north; new canadians; act/asked; olympic; oil/inflation)
+
+
+
+Topics (from 30-1000-18480634):
+
+* "act/asked" [general: changing tone of Throne Speeches]: 24
+* "new canadians" [general]: 12
+* "health/communities/aboriginal" [general]: 6
+* ("values/environment/women" [general]: 8)
+
+* "trust/middle" [author: Liberal]: 17
+* "families/north/sovereignty" [author: Conservative]: 18
+
+* "oil/inflation" [topical: 70s]: 10
+* "olympics" [topical: 2010s]: 3
+* ("national consensus cooperation" [topical: 80s dealing with FR/EN]: 20)
