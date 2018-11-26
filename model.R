@@ -6,7 +6,7 @@ library(mallet)
 rm(list = ls())
 
 # LOCAL CONFIG
-conf_index <- 5 #also the seed
+conf_index <- 2 # also the seed
 conf_num_topics <- 30
 conf_num_runs <- 10000
 
@@ -53,44 +53,15 @@ speeches <- mallet.read.dir("data/generated/speeches-throne/")
 speeches <- tibble(id = speeches$id, text = speeches$text)
 
 ## Bring in the speeches
-mallet.instances <- mallet.import(speeches$id, speeches$text, stoplist = "stoplist.txt")
-
-## Set the number of topics
-topic.model <- MalletLDA(num.topics = conf_num_topics)
-
-## Load the speeches into the model
-topic.model$loadDocuments(mallet.instances)
-
-## Get the vocabulary, and some statistics about word frequencies.
-##  These may be useful in further curating the stopword list.
-vocabulary <- topic.model$getVocabulary()
-word.freqs <- mallet.word.freqs(topic.model)
-
-## Optimize hyperparameters every 20 iterations,
-##  after 50 burn-in iterations.
-topic.model$setAlphaOptimization(20, 50)
-
-topic.model$setRandomSeed(4)
+instance_list <- mallet.import(speeches$id, speeches$text, stoplist = "stoplist.txt")
 
 ## Train the model
-topic.model$train(conf_num_runs)
-
-## NEW: run through a few iterations where we pick the best topic for each token,
-##  rather than sampling from the posterior distribution.
-topic.model$maximize(20)
-
-## Get the probability of topics in documents and the probability of words in topics.
-## By default, these functions return raw word counts. Here we want probabilities,
-##  so we normalize, and add "smoothing" so that nothing has exactly 0 probability.
-doc.topics <- mallet.doc.topics(topic.model, smoothed=T, normalized=T)
-topic.words <- mallet.topic.words(topic.model, smoothed=T, normalized=T)
-
-## Create a model for dfrtopics
-m <- mallet_model(doc_topics = doc.topics, doc_ids = speeches$id, vocab = vocabulary, topic_words = topic.words, model = topic.model)
-
-## Load metadata into model
-metadata(m) <- speech_meta
-
+m <- train_model(instance_list, n_topics=conf_num_topics,
+                 n_iters=conf_num_runs,
+                 seed=conf_index,
+                 metadata=speech_meta,
+                 n_hyper_iters=20,
+                 n_burn_in = 50)
 
 # Create analysis variables
 
