@@ -6,7 +6,8 @@ library(mallet)
 rm(list = ls())
 
 # LOCAL CONFIG
-conf_num_topics <- 40
+conf_index <- 5 #also the seed
+conf_num_topics <- 30
 conf_num_runs <- 10000
 
 # Load base index data
@@ -69,6 +70,8 @@ word.freqs <- mallet.word.freqs(topic.model)
 ##  after 50 burn-in iterations.
 topic.model$setAlphaOptimization(20, 50)
 
+topic.model$setRandomSeed(4)
+
 ## Train the model
 topic.model$train(conf_num_runs)
 
@@ -93,6 +96,18 @@ metadata(m) <- speech_meta
 
 ## Print out the topics
 topic_labels <- tibble(label = topic_labels(m)) %>%
+  mutate(id = row_number()) %>%
+  select(id, label)
+
+topic_labels_short <- tibble(label = topic_labels(m, n = 16)) %>%
+  mutate(id = row_number()) %>%
+  select(id, label)
+
+topic_labels_medium <- tibble(label = topic_labels(m, n = 20)) %>%
+  mutate(id = row_number()) %>%
+  select(id, label)
+
+topic_labels_long <- tibble(label = topic_labels(m, n = 100)) %>%
   mutate(id = row_number()) %>%
   select(id, label)
 
@@ -123,4 +138,6 @@ topic_probabilities_by_document_cov <- topic_probabilities_by_document %>%
   summarize(cov = sd(weight) / mean(weight))
 
 ## Optional: save model; rename with num topics, num iterations, index once saved
-save.image(paste("data/models/", conf_num_topics, "-", conf_num_runs, "-1.RData", sep=""))
+model_filename <- paste0("data/models/", conf_num_topics, "-", conf_num_runs, "-", conf_index)
+save.image(paste0(model_filename, ".RData"))
+write_mallet_model(m, model_filename)
