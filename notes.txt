@@ -60,6 +60,16 @@ Potential topics:
 Phrase frequency:
 
 * "national ..." "security" vs "development" vs "unity"
+* "united states" vs "united nations"
+
+Interesting words:
+
+* aboriginal
+* environment*
+* asked
+* families
+* health
+
 
 Nice models:
 
