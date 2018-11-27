@@ -124,3 +124,14 @@ ggplot(weight_by_speech, mapping = aes(x = date, y = weight)) +
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
     legend.position = 0
   )
+
+
+
+# OUTPUTTING
+
+for (presentation_topic in presentation_topics) {
+  ## ggsave...
+  plot_topic_weights(weight_by_speech %>% filter(topic_id == presentation_topic))
+  
+  plot_top_words(top_words(m, 10), presentation_topic) + xlab(label = "Weight")
+}
