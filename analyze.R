@@ -46,7 +46,8 @@ ggplot() +
       "1980-01-01",
       "1990-01-01",
       "2000-01-01",
-      "2010-01-01"
+      "2010-01-01",
+      "2020-01-01"
     )),
     minor_breaks = NULL,
     date_labels = "%Y"
@@ -57,15 +58,52 @@ ggplot() +
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
   )
 
+
+
 ## Weight by speech (coloured by party) and a disaggregated trendline
+
+### Function (for single plot)
+plot_topic_weights <- function(topic_weights) {
+  ggplot(topic_weights, mapping = aes(x = date, y = weight)) +
+    geom_smooth(method = "loess", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
+    geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 25) +
+    geom_point(data = topic_weights %>% filter(weight > 0), mapping = aes(colour = governing_party)) +
+    scale_y_continuous(name = "Weight", expand = c(0, 0), limits = c(0, 1000)) +
+    scale_fill_manual(values = c("conservative" = "blue", "liberal" = "red")) +
+    scale_colour_manual(values = c("conservative" = "blue", "liberal" = "red")) +
+    scale_x_date(
+      name = "Date",
+      limits = as.Date(c("1950-01-01","2020-01-01")),
+      breaks = as.Date(c(
+        "1950-01-01",
+        "1960-01-01",
+        "1970-01-01",
+        "1980-01-01",
+        "1990-01-01",
+        "2000-01-01",
+        "2010-01-01",
+        "2020-01-01"
+      )),
+      minor_breaks = NULL,
+      date_labels = "%Y"
+    ) +
+    theme(
+      strip.text.x = element_text(hjust = 0),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+      legend.position = 0
+    )
+}
+
+### Non-function (all the plots)
 ggplot(weight_by_speech, mapping = aes(x = date, y = weight)) +
   geom_smooth(method = "loess", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
   geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 25) +
   geom_point(data = weight_by_speech %>% filter(weight > 0), mapping = aes(colour = governing_party)) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1000)) +
+  scale_y_continuous(name = "Weight", expand = c(0, 0), limits = c(0, 1000)) +
   scale_fill_manual(values = c("conservative" = "blue", "liberal" = "red")) +
   scale_colour_manual(values = c("conservative" = "blue", "liberal" = "red")) +
   scale_x_date(
+    name = "Date",
     limits = as.Date(c("1950-01-01","2020-01-01")),
     breaks = as.Date(c(
       "1950-01-01",
@@ -74,7 +112,8 @@ ggplot(weight_by_speech, mapping = aes(x = date, y = weight)) +
       "1980-01-01",
       "1990-01-01",
       "2000-01-01",
-      "2010-01-01"
+      "2010-01-01",
+      "2020-01-01"
     )),
     minor_breaks = NULL,
     date_labels = "%Y"
@@ -82,5 +121,6 @@ ggplot(weight_by_speech, mapping = aes(x = date, y = weight)) +
   facet_wrap(~ topic_label) +
   theme(
     strip.text.x = element_text(hjust = 0),
-    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+    legend.position = 0
   )
