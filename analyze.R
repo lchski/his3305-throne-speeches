@@ -65,7 +65,7 @@ ggplot() +
 ### Function (for single plot)
 plot_topic_weights <- function(topic_weights) {
   ggplot(topic_weights, mapping = aes(x = date, y = weight)) +
-    geom_smooth(method = "loess", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
+    geom_smooth(method = "loess", se = 0, colour = "black", linetype = "dashed", size = 1.5) +
     geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 50) +
     geom_point(data = topic_weights %>% filter(weight > 0), mapping = aes(colour = governing_party), size = 3) +
     scale_y_continuous(name = "Weight", expand = c(0, 0), limits = c(0, 1000)) +
@@ -91,10 +91,10 @@ plot_topic_weights <- function(topic_weights) {
       text = element_text(family = "Helvetica"),
       strip.text.x = element_text(hjust = 0),
       legend.position = 0,
-      axis.text.y = element_text(size = 18, margin = margin(r = 10)),
-      axis.text.x = element_text(size = 18, margin = margin(t = 10)),
-      axis.title.y = element_text(size = 32, margin = margin(r = 10)),
-      axis.title.x = element_text(size = 32, margin = margin(t = 20)),
+      axis.text.y = element_text(size = 36, margin = margin(r = 20)),
+      axis.text.x = element_text(size = 36, margin = margin(t = 20)),
+      axis.title.y = element_text(size = 64, margin = margin(r = 20)),
+      axis.title.x = element_text(size = 64, margin = margin(t = 40)),
       plot.background = element_rect(fill = "transparent",colour = NA)
     )
 }
@@ -142,8 +142,8 @@ for (presentation_topic in presentation_topics) {
   plot_topic_weights(weight_by_speech %>% filter(topic_id == presentation_topic)) +
     ggsave(
       paste0(base_filename, "topic-weights.png"),
-      width = 14.08,
-      height = 8.92,
+      width = 28.16,
+      height = 17.84,
       units = "in",
       bg = "transparent"
     )
@@ -153,15 +153,15 @@ for (presentation_topic in presentation_topics) {
     labs(title = NULL) +
     theme(
       text = element_text(family = "Helvetica"),
-      axis.text.y = element_text(size = 32, margin = margin(r = 10)),
-      axis.text.x = element_text(size = 18, margin = margin(t = 10)),
-      axis.title.x = element_text(size = 32, margin = margin(t = 20)),
+      axis.text.y = element_text(size = 64, margin = margin(r = 20)),
+      axis.text.x = element_text(size = 36, margin = margin(t = 20)),
+      axis.title.x = element_text(size = 64, margin = margin(t = 40)),
       plot.background = element_rect(fill = "transparent",colour = NA)
     ) +
     ggsave(
       paste0(base_filename, "top-words.png"),
-      width = 7.04,
-      height = 8.92,
+      width = 14.08,
+      height = 17.84,
       units = "in",
       bg = "transparent"
     )
@@ -171,7 +171,7 @@ plot_top_words(top_words(m, 10), 24) +
   xlab(label = "Weight") +
   labs(title = NULL) +
   theme(
-    axis.text.y = element_text(size = 32, margin = margin(r = 10)),
-    axis.text.x = element_text(size = 18),
-    axis.title.x = element_text(size = 32, margin = margin(t = 20))
+    axis.text.y = element_text(size = 64, margin = margin(r = 20)),
+    axis.text.x = element_text(size = 36),
+    axis.title.x = element_text(size = 64, margin = margin(t = 40))
   )
