@@ -66,8 +66,8 @@ ggplot() +
 plot_topic_weights <- function(topic_weights) {
   ggplot(topic_weights, mapping = aes(x = date, y = weight)) +
     geom_smooth(method = "loess", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
-    geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 25) +
-    geom_point(data = topic_weights %>% filter(weight > 0), mapping = aes(colour = governing_party)) +
+    geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 50) +
+    geom_point(data = topic_weights %>% filter(weight > 0), mapping = aes(colour = governing_party), size = 3) +
     scale_y_continuous(name = "Weight", expand = c(0, 0), limits = c(0, 1000)) +
     scale_fill_manual(values = c("conservative" = "blue", "liberal" = "red")) +
     scale_colour_manual(values = c("conservative" = "blue", "liberal" = "red")) +
@@ -88,9 +88,14 @@ plot_topic_weights <- function(topic_weights) {
       date_labels = "%Y"
     ) +
     theme(
+      text = element_text(family = "Helvetica"),
       strip.text.x = element_text(hjust = 0),
-      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-      legend.position = 0
+      legend.position = 0,
+      axis.text.y = element_text(size = 18, margin = margin(r = 10)),
+      axis.text.x = element_text(size = 18, margin = margin(t = 10)),
+      axis.title.y = element_text(size = 32, margin = margin(r = 10)),
+      axis.title.x = element_text(size = 32, margin = margin(t = 20)),
+      plot.background = element_rect(fill = "transparent",colour = NA)
     )
 }
 
@@ -120,6 +125,7 @@ ggplot(weight_by_speech, mapping = aes(x = date, y = weight)) +
   ) +
   facet_wrap(~ topic_label) +
   theme(
+    text = element_text(family = "Helvetica"),
     strip.text.x = element_text(hjust = 0),
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
     legend.position = 0
@@ -130,8 +136,42 @@ ggplot(weight_by_speech, mapping = aes(x = date, y = weight)) +
 # OUTPUTTING
 
 for (presentation_topic in presentation_topics) {
-  ## ggsave...
-  plot_topic_weights(weight_by_speech %>% filter(topic_id == presentation_topic))
+  base_filename <- paste0("output/", presentation_topic, "-")
   
-  plot_top_words(top_words(m, 10), presentation_topic) + xlab(label = "Weight")
+  ## ggsave...
+  plot_topic_weights(weight_by_speech %>% filter(topic_id == presentation_topic)) +
+    ggsave(
+      paste0(base_filename, "topic-weights.png"),
+      width = 14.08,
+      height = 8.92,
+      units = "in",
+      bg = "transparent"
+    )
+  
+  plot_top_words(top_words(m, 10), presentation_topic) +
+    xlab(label = "Weight") +
+    labs(title = NULL) +
+    theme(
+      text = element_text(family = "Helvetica"),
+      axis.text.y = element_text(size = 32, margin = margin(r = 10)),
+      axis.text.x = element_text(size = 18, margin = margin(t = 10)),
+      axis.title.x = element_text(size = 32, margin = margin(t = 20)),
+      plot.background = element_rect(fill = "transparent",colour = NA)
+    ) +
+    ggsave(
+      paste0(base_filename, "top-words.png"),
+      width = 7.04,
+      height = 8.92,
+      units = "in",
+      bg = "transparent"
+    )
 }
+
+plot_top_words(top_words(m, 10), 24) +
+  xlab(label = "Weight") +
+  labs(title = NULL) +
+  theme(
+    axis.text.y = element_text(size = 32, margin = margin(r = 10)),
+    axis.text.x = element_text(size = 18),
+    axis.title.x = element_text(size = 32, margin = margin(t = 20))
+  )
