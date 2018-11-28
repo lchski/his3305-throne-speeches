@@ -65,9 +65,10 @@ ggplot() +
 ### Function (for single plot)
 plot_topic_weights <- function(topic_weights) {
   ggplot(topic_weights, mapping = aes(x = date, y = weight)) +
-    geom_smooth(method = "loess", se = 0, colour = "black", linetype = "dashed", size = 1.5) +
-    geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 50) +
-    geom_point(data = topic_weights %>% filter(weight > 0), mapping = aes(colour = governing_party), size = 3) +
+    geom_smooth(method = "loess", se = 0, colour = "black", linetype = "dashed", size = 2) +
+    geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 100) +
+    geom_point(data = topic_weights %>% filter(weight > 0), mapping = aes(colour = governing_party), size = 7.5) +
+    geom_point(data = topic_weights %>% filter(weight == 0), mapping = aes(colour = governing_party), size = 7.5, alpha = 0.25) +
     scale_y_continuous(name = "Weight", expand = c(0, 0), limits = c(0, 1000)) +
     scale_fill_manual(values = c("conservative" = "blue", "liberal" = "red")) +
     scale_colour_manual(values = c("conservative" = "blue", "liberal" = "red")) +
