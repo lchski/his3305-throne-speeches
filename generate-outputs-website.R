@@ -113,36 +113,35 @@ topic_labels %>% write_csv("data/generated/website/topic.csv")
 
 
 ## Plots
-for (topic_to_output in topic_labels) {
-  tid <- topic_to_output$topic_id
-  
-  base_filename <- paste0("output/", tid, "-")
+for (topic_to_output in topic_labels$id) {
+  base_filename <- paste0("output/", topic_to_output, "-")
   
   ## ggsave...
-  plot_topic_weights(weight_by_speech %>% filter(topic_id == tid)) +
+  plot_topic_weights(weight_by_speech %>% filter(topic_id == topic_to_output)) +
     ggsave(
       paste0(base_filename, "topic-weights.png"),
-      width = 28.16,
-      height = 17.84,
+      device = "png",
+      width = 7,
+      height = 3,
       units = "in",
-      bg = "transparent"
+      bg = "transparent",
+      dpi = 150
     )
   
-  plot_top_words(top_words(m, 10), tid) +
+  plot_top_words(top_words(m, 10), topic_to_output) +
     xlab(label = "Weight") +
     labs(title = NULL) +
     theme(
       text = element_text(family = "Helvetica"),
-      axis.text.y = element_text(size = 64, margin = margin(r = 20)),
-      axis.text.x = element_text(size = 36, margin = margin(t = 20)),
-      axis.title.x = element_text(size = 64, margin = margin(t = 40)),
       plot.background = element_rect(fill = "transparent",colour = NA)
     ) +
     ggsave(
       paste0(base_filename, "top-words.png"),
-      width = 14.08,
-      height = 17.84,
+      device = "png",
+      width = 3,
+      height = 3,
       units = "in",
-      bg = "transparent"
+      bg = "transparent",
+      dpi = 150
     )
 }
