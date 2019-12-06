@@ -25,6 +25,12 @@ topic_labels <- tibble(label = topic_labels(m), label_longer = topic_labels(m, 2
   select(id, label, label_longer)
 
 ## Topic probabilities per document
+topic_probabilities_by_document_normalized <- top_docs(m, n = 30) %>%
+  rename(doc_id = doc, topic_id = topic, weight = weight) %>%
+  inner_join(metadata(m), by = c("doc_id" = "num_id")) %>%
+  inner_join(topic_labels, by = c("topic_id" = "id")) %>%
+  select(topic_id, topic_label = label, weight, parliament, session, date, governing_party)
+
 topic_probabilities_by_document <- doc_topics(m) %>%
   gather_matrix() %>%
   rename(doc_id = row_key, topic_id = col_key, weight = value) %>%
@@ -36,6 +42,12 @@ topic_probabilities_by_document <- doc_topics(m) %>%
 weight_by_speech <- topic_probabilities_by_document %>%
   select(topic_id, topic_label, date, weight, governing_party)
 
+## Top docs for a speech
+top_docs(m, 6) %>%
+  filter(topic == 17) %>%
+  mutate(weight = round(weight, 5)) %>%
+  inner_join(speech_meta, by = c("doc" = "num_id")) %>%
+  select(topic, weight, speech_id = doc, parliament, session, date, governing_party)
 
 # Plotting
 
@@ -48,7 +60,7 @@ plot_topic_weights <- function(topic_weights) {
     geom_bar(mapping = aes(fill = governing_party), stat = "identity", width = 100) +
     geom_point(data = topic_weights %>% filter(weight > 0), mapping = aes(colour = governing_party)) +
     geom_point(data = topic_weights %>% filter(weight == 0), mapping = aes(colour = governing_party), alpha = 0.25) +
-    scale_y_continuous(name = "Weight", expand = c(0, 0), limits = c(0, 1600)) +
+    scale_y_continuous(name = "Weight", expand = c(0, 0), limits = c(0, 1)) +
     scale_fill_manual(values = c("conservative" = "blue", "liberal" = "red")) +
     scale_colour_manual(values = c("conservative" = "blue", "liberal" = "red")) +
     scale_x_date(
@@ -145,3 +157,33 @@ for (topic_to_output in topic_labels$id) {
       dpi = 150
     )
 }
+
+topic_probabilities_by_document %>%
+  group_by(topic_id, decade = as.Date(paste(substr(date, 1, 3), "0-01-01", sep="")), governing_party, topic_label) %>%
+  summarize(avg_weight = mean(weight)) %>%
+  ungroup() %>%
+  mutate(topic_label = fct_reorder(topic_label, topic_id)) %>%
+  filter(topic_id == 17) %>%
+  ggplot(mapping = aes(x = decade, y = avg_weight)) +
+  geom_col(mapping = aes(fill = governing_party), position = "dodge") +
+  geom_smooth(method = "lm", se = 0, colour = "black", linetype = "dashed", size = 0.5) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, NA)) +
+  scale_fill_manual(values = c("conservative" = "blue", "liberal" = "red")) +
+  scale_x_date(
+    limits = as.Date(c("1945-01-01","2020-01-01")),
+    breaks = as.Date(c(
+      "1950-01-01",
+      "1960-01-01",
+      "1970-01-01",
+      "1980-01-01",
+      "1990-01-01",
+      "2000-01-01",
+      "2010-01-01"
+    )),
+    minor_breaks = NULL,
+    date_labels = "%Y"
+  ) +
+  theme(
+    strip.text.x = element_text(hjust = 0),
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+  )
