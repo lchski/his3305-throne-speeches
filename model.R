@@ -55,7 +55,7 @@ speeches <- mallet.read.dir("data/generated/speeches-throne/")
 speeches <- tibble(id = speeches$id, text = speeches$text)
 
 ## Bring in the speeches
-instance_list <- mallet.import(speeches$id, speeches$text, stoplist = "stoplist.txt")
+instance_list <- mallet.import(speeches$id, speeches$text, stoplist.file = "stoplist.txt")
 
 ## Train the model
 m <- train_model(instance_list, n_topics=conf_num_topics,
