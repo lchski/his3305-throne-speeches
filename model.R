@@ -8,7 +8,8 @@ rm(list = ls())
 source("visualize.R")
 
 # LOCAL CONFIG
-conf_index <- floor(runif(1, min=0, max=32000000)) # also the seed
+#conf_index <- floor(runif(1, min=0, max=32000000)) # make your own seed!
+conf_index <- 18480634 # this is the seed that generates his3305.labs.lucascherkewski.com
 conf_num_topics <- 30
 conf_num_runs <- 1000
 
