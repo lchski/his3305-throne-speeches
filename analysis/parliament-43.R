@@ -2,7 +2,7 @@ library(tidytext)
 
 source("lib/similarity.R")
 
-speech_43 <- mallet.read.dir("data/source/new-speeches/")
+speech_43 <- mallet.read.dir("data/source/new-speeches/") ## NB! Need to have all 51 speeches from original project plus the 43rd Parliament speech (speech 52, for our purposes)
 speech_43 <- tibble(id = speech_43$id, text = speech_43$text)
 s43_ilist <- mallet.import(as.character(speech_43$id), as.character(speech_43$text), stoplist.file = "stoplist.txt")
 
