@@ -37,16 +37,29 @@ speech_similarity <- analyse_statement_similarity(
     left_join(speech_meta, by = c("id" = "num_id")) %>%
     select(-id.y),
   similarity_threshold = 0.75
-) %>% pluck("similarity_scores")
+) %>% pluck("similarity_scores") %>%
+  mutate(id.x = as.integer(id.x), id.y = as.integer(id.y))
 
 ### Compare!
+get_scores_for_speech <- function(similarity_scores, speech_id) {
+  similarity_scores %>%
+    filter(id.x == speech_id | id.y == speech_id) %>%
+    mutate(
+      id.x = if_else(id.x == speech_id, NA_integer_, id.x),
+      id.y = if_else(id.y == speech_id, NA_integer_, id.y)
+    ) %>%
+    mutate(
+      base_id = speech_id,
+      compared_id = coalesce(id.x, id.y)
+    ) %>%
+    select(base_id, compared_id, value) %>%
+    left_join(speech_meta %>% select(-id), by = c("compared_id" = "num_id")) %>%
+    arrange(-value)
+}
+
 speech_similarity %>%
-  filter(id.x == 52 | id.y == 52) %>%
-  mutate(id.x = as.integer(id.x)) %>%
-  left_join(speech_meta, by = c("id.x" = "num_id")) %>%
-  select(-id) %>%
-  arrange(-value) %>%
-  View()
+  get_scores_for_speech(52)
+
 
 
 ## play with the tidytext package
